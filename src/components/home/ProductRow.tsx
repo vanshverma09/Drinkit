@@ -8,6 +8,7 @@ import { Price } from "@/components/ui/Typography";
 import { Badge } from "@/components/ui/Badge";
 import { products } from "@/data/dummy";
 import { useCartStore } from "@/store/cart";
+import { useRouter } from "next/navigation";
 
 interface ProductRowProps {
   title: string;
@@ -17,6 +18,7 @@ interface ProductRowProps {
 
 export function ProductRow({ title, items, showTimer }: ProductRowProps) {
   const addToCart = useCartStore((state) => state.addToCart);
+  const router = useRouter();
 
   return (
     <div className="mb-8">
@@ -36,11 +38,12 @@ export function ProductRow({ title, items, showTimer }: ProductRowProps) {
         {items.map((product, idx) => (
           <motion.div
             key={product.id}
+            onClick={() => router.push(`/product/${product.id}`)}
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-20px" }}
             transition={{ delay: idx * 0.05, duration: 0.4 }}
-            className="snap-start shrink-0 w-[150px] relative bg-surface border border-border-light rounded-[--radius-lg] p-3 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+            className="snap-start shrink-0 w-[150px] relative bg-surface border border-border-light rounded-[--radius-lg] p-3 shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer"
           >
             {/* Tags */}
             <div className="absolute top-0 left-0 z-10 flex flex-col gap-1 items-start">
@@ -86,7 +89,10 @@ export function ProductRow({ title, items, showTimer }: ProductRowProps) {
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => addToCart(product)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(product);
+                  }}
                   className="w-8 h-8 rounded-[--radius-sm] bg-primary-50 dark:bg-primary/20 text-primary flex items-center justify-center border border-primary/20 hover:bg-primary hover:text-white transition-colors shadow-sm"
                   aria-label="Add to cart"
                 >

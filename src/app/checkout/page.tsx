@@ -8,21 +8,20 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { products } from "@/data/dummy";
-
-// Dummy order data
-const orderItems = [
-  { ...products[0], quantity: 2 },
-  { ...products[1], quantity: 1 },
-];
-const itemTotal = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-const handlingFee = 15;
-const grandTotal = itemTotal + handlingFee;
+import { useCartStore } from "@/store/cart";
+import { placeOrder } from "./actions";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   
+  const { items, totalPrice, clearCart } = useCartStore();
+  
+  const itemTotal = totalPrice();
+  const handlingFee = 15;
+  const grandTotal = itemTotal + handlingFee;
+
   // Checkout States
   const [step, setStep] = useState<"review" | "processing" | "success">("review");
   
@@ -34,18 +33,36 @@ export default function CheckoutPage() {
 
   useEffect(() => setIsClient(true), []);
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
+    if (items.length === 0) {
+      toast.error("Your cart is empty!");
+      return;
+    }
+
     setStep("processing");
     
-    // Simulate payment processing
-    setTimeout(() => {
-      setStep("success");
-      
-      // Auto redirect to tracking after success
-      setTimeout(() => {
-        router.push("/tracking");
-      }, 4000);
-    }, 2500);
+    // Map items to the format required by our Server Action
+    const orderPayload = items.map(i => ({ id: i.id, quantity: i.quantity }));
+    const address = "45B, Sector 3, Cyber City, Phase 2, Floor 4"; // In a real app, this comes from an address selector
+
+    try {
+      const response = await placeOrder(orderPayload, address);
+
+      if (response.success) {
+        setStep("success");
+        clearCart(); // Clear the Zustand store!
+        
+        setTimeout(() => {
+          router.push(`/tracking`);
+        }, 4000);
+      } else {
+        toast.error(response.error || "Failed to place order.");
+        setStep("review");
+      }
+    } catch (error) {
+      toast.error("Network error. Please try again.");
+      setStep("review");
+    }
   };
 
   if (!isClient) return null;
@@ -220,7 +237,7 @@ export default function CheckoutPage() {
               {/* Order Summary (Compact) */}
               <section className="bg-surface border border-border-light rounded-[--radius-lg] p-4 shadow-sm">
                 <div className="flex items-center justify-between cursor-pointer">
-                  <h2 className="font-heading font-bold text-text-primary text-sm">Order Summary ({orderItems.length} items)</h2>
+                  <h2 className="font-heading font-bold text-text-primary text-sm">Order Summary ({items.length} items)</h2>
                   <Link href="/cart" className="text-primary text-sm font-semibold">Edit Cart</Link>
                 </div>
                 <div className="mt-3 space-y-1.5 text-sm">

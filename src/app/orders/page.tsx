@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -9,58 +9,7 @@ import {
   RotateCcw, ChevronRight, Package, XCircle, Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Dummy Order Data
-const dummyOrders = [
-  {
-    id: "ORD-8392104",
-    status: "current",
-    date: "Today, 10:00 AM",
-    total: 345,
-    items: [
-      { name: "Coca Cola Classic", qty: 2 },
-      { name: "Red Bull Energy", qty: 1 }
-    ],
-    eta: "12 mins",
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=150&auto=format&fit=crop"
-  },
-  {
-    id: "ORD-7392103",
-    status: "completed",
-    date: "14 Jul 2026, 04:30 PM",
-    total: 890,
-    items: [
-      { name: "Orange Juice", qty: 3 },
-      { name: "Mineral Water", qty: 2 },
-      { name: "Diet Coke", qty: 1 }
-    ],
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=150&auto=format&fit=crop"
-  },
-  {
-    id: "ORD-6392102",
-    status: "completed",
-    date: "10 Jul 2026, 11:15 AM",
-    total: 450,
-    items: [
-      { name: "Monster Energy", qty: 2 },
-      { name: "Gatorade Blue", qty: 2 }
-    ],
-    rating: 0,
-    image: "https://images.unsplash.com/photo-1581006852262-e4307cf6283a?q=80&w=150&auto=format&fit=crop"
-  },
-  {
-    id: "ORD-5392101",
-    status: "cancelled",
-    date: "05 Jul 2026, 09:20 PM",
-    total: 220,
-    items: [
-      { name: "Sparkling Water", qty: 4 }
-    ],
-    cancelReason: "Store closed",
-    image: "https://images.unsplash.com/photo-1556881286-fc6915169721?q=80&w=150&auto=format&fit=crop"
-  }
-];
+import { getUserOrders } from "./actions";
 
 const tabs = [
   { id: "all", label: "All" },
@@ -72,8 +21,36 @@ const tabs = [
 export default function OrdersPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredOrders = dummyOrders.filter(
+  useEffect(() => {
+    getUserOrders().then(data => {
+      // Map database orders to UI friendly format
+      const formatted = data.map(dbOrder => {
+        let status = "current";
+        if (dbOrder.status === "DELIVERED") status = "completed";
+        if (dbOrder.status === "CANCELLED") status = "cancelled";
+
+        return {
+          id: dbOrder.id.slice(0, 11).toUpperCase(),
+          status: status,
+          date: new Date(dbOrder.createdAt).toLocaleString(),
+          total: dbOrder.totalAmount,
+          items: dbOrder.orderItems.map((oi: any) => ({
+            name: oi.product.name,
+            qty: oi.quantity
+          })),
+          eta: "12 mins", // In a real app, calculate based on order time
+          image: dbOrder.orderItems[0]?.product?.image || "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=150&auto=format&fit=crop"
+        };
+      });
+      setOrders(formatted);
+      setIsLoading(false);
+    });
+  }, []);
+
+  const filteredOrders = orders.filter(
     order => activeTab === "all" || order.status === activeTab
   );
 

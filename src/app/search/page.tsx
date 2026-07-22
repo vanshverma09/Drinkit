@@ -5,17 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search as SearchIcon, ArrowLeft, Mic, Clock, TrendingUp, X, Filter, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { products } from "@/data/dummy";
 import { ProductCardSkeleton } from "@/components/ui/Skeleton";
 import Image from "next/image";
 import { Price } from "@/components/ui/Typography";
 import { Plus } from "lucide-react";
+import { searchProducts } from "./actions";
+import { Product } from "@prisma/client";
 
 /* ── MOCK DATA ────────────────────────────────────────────── */
-const recentSearches = ["Red Bull", "Orange Juice", "Water", "Green Tea"];
-const popularSearches = ["Coca Cola", "Cold Coffee", "Milk", "Protein Shake", "Monster Energy"];
-const trendingKeywords = ["Summer Refreshers", "Hydration", "Healthy Drinks"];
-const filterOptions = ["All", "Cold Drinks", "Juices", "Energy", "Tea", "Coffee", "Water"];
+const recentSearches = ["Jack Daniel's", "Blue Label", "Absolut", "Heineken"];
+const popularSearches = ["Whiskey", "Beer", "Vodka", "Premium Brands", "Rum"];
+const trendingKeywords = ["Weekend Party", "Premium", "Chilled"];
+const filterOptions = ["All", "Whiskey", "Vodka", "Beer", "Rum", "Premium"];
 const sortOptions = ["Relevance", "Price: Low to High", "Price: High to Low", "New Arrivals"];
 
 /* ── VOICE SEARCH MODAL ───────────────────────────────────── */
@@ -51,7 +52,7 @@ function VoiceSearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
           </div>
         </div>
         
-        <p className="text-text-secondary text-sm text-center">Try saying "Red Bull" or "Fresh Orange Juice"</p>
+        <p className="text-text-secondary text-sm text-center">Try saying "Blue Label" or "Cold Beer"</p>
       </motion.div>
     </div>
   );
@@ -65,15 +66,17 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<typeof products>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [results, setResults] = useState<Product[]>([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeSort, setActiveSort] = useState("Relevance");
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
-  // Auto focus input on mount
+  // Auto focus input and fetch live data on mount
   useEffect(() => {
     setTimeout(() => inputRef.current?.focus(), 100);
+    searchProducts("", "").then(data => setAllProducts(data));
   }, []);
 
   // Search logic (debounced)
@@ -88,7 +91,7 @@ export default function SearchPage() {
     setIsSearching(true);
     
     const delay = setTimeout(() => {
-      let filtered = products.filter(p => 
+      let filtered = allProducts.filter(p => 
         p.name.toLowerCase().includes(query.toLowerCase()) || 
         p.brand.toLowerCase().includes(query.toLowerCase()) ||
         p.category.toLowerCase().includes(query.toLowerCase())
@@ -106,7 +109,7 @@ export default function SearchPage() {
     }, 400);
 
     return () => clearTimeout(delay);
-  }, [query, activeFilter, activeSort]);
+  }, [query, activeFilter, activeSort, allProducts]);
 
   const clearSearch = () => {
     setQuery("");

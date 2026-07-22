@@ -5,29 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { useSession, signOut } from "next-auth/react";
 import { 
   ArrowLeft, Wallet, Gift, MapPin, CreditCard, 
   HelpCircle, HeadphonesIcon, Settings, Moon, Sun, 
-  Globe, LogOut, ChevronRight, Edit3
+  Globe, LogOut, ChevronRight, Edit3, User as UserIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Dummy user data
-const user = {
-  name: "Modi",
-  phone: "+91 90000 15000",
-  email: "modithekalover@gmail.com",
-  walletBalance: 1250,
-  rewardPoints: 840,
-  avatar: "/modi.png"
-};
 
 const menuSections = [
   {
     title: "Account & Payments",
     items: [
-      { id: "wallet", label: "DrinkIT Wallet", icon: Wallet, value: "₹" + user.walletBalance, href: "/profile/wallet" },
-      { id: "rewards", label: "My Rewards", icon: Gift, value: user.rewardPoints + " pts", href: "/profile/rewards", highlight: true },
+      { id: "wallet", label: "DrinkIT Wallet", icon: Wallet, value: "₹1250", href: "/profile/wallet" },
+      { id: "rewards", label: "My Rewards", icon: Gift, value: "840 pts", href: "/profile/rewards", highlight: true },
       { id: "addresses", label: "Saved Addresses", icon: MapPin, href: "/profile/addresses" },
       { id: "cards", label: "Saved Cards", icon: CreditCard, href: "/profile/cards" },
     ]
@@ -52,6 +43,7 @@ const menuSections = [
 export default function ProfilePage() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
 
@@ -63,15 +55,55 @@ export default function ProfilePage() {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+  };
+
+  // ── Unauthenticated State ──
+  if (status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-surface p-8 rounded-[32px] shadow-xl border border-border flex flex-col items-center max-w-sm w-full"
+        >
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+            <UserIcon size={32} className="text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold text-text-primary mb-2">You're not logged in</h2>
+          <p className="text-text-secondary text-sm mb-8">
+            Log in to view your orders, save your wishlist, and get exclusive rewards.
+          </p>
+          <button 
+            onClick={() => router.push("/login")}
+            className="w-full h-12 bg-primary text-white font-bold rounded-[14px] flex items-center justify-center shadow-primary active:scale-95 transition-transform"
+          >
+            Log In or Sign Up
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Loading State ──
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+      </div>
+    );
+  }
+
+  const user = {
+    name: session?.user?.name || "DrinkIT User",
+    email: session?.user?.email || "No email provided",
+    avatar: session?.user?.image || "/modi.png",
   };
 
   return (
@@ -151,10 +183,9 @@ export default function ProfilePage() {
               className="object-cover"
             />
           </motion.button>
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-text-primary">{user.name}</h2>
-            <p className="text-sm text-text-secondary mt-0.5">{user.phone}</p>
-            <p className="text-sm text-text-secondary">{user.email}</p>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl font-bold text-text-primary truncate">{user.name}</h2>
+            <p className="text-sm text-text-secondary mt-0.5 truncate">{user.email}</p>
           </div>
         </motion.div>
 
@@ -216,7 +247,8 @@ export default function ProfilePage() {
                 {section.title === "Preferences" && mounted && (
                   <motion.div
                     variants={itemVariants}
-                    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border-t border-border-light"
+                    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border-t border-border-light cursor-pointer"
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center shrink-0 text-text-secondary">
@@ -228,7 +260,6 @@ export default function ProfilePage() {
                     </div>
                     
                     <button 
-                      onClick={() => { /* Disabled per user request */ }}
                       className={cn(
                         "relative w-12 h-6 rounded-full transition-colors",
                         theme === 'dark' ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
@@ -249,7 +280,7 @@ export default function ProfilePage() {
           {/* ── Logout Button ── */}
           <motion.div variants={itemVariants}>
             <button 
-              onClick={() => { /* Disabled per user request */ }}
+              onClick={() => signOut({ callbackUrl: "/home" })}
               className="w-full bg-surface rounded-2xl p-4 shadow-sm border border-red-100 dark:border-red-900/30 flex items-center justify-center gap-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors mt-2"
             >
               <LogOut className="w-5 h-5" />

@@ -173,7 +173,13 @@ export default function PhoneLoginPage() {
 
       {/* Social Buttons */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={stagger} className="space-y-3">
-        <button className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[14px] text-white text-sm font-medium flex items-center justify-center gap-3 transition-all active:scale-[0.97]">
+        <button 
+          onClick={() => {
+            import("next-auth/react").then(({ signIn }) => signIn("google", { callbackUrl: "/home" }))
+          }}
+          type="button"
+          className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[14px] text-white text-sm font-medium flex items-center justify-center gap-3 transition-all active:scale-[0.97]"
+        >
           <GoogleIcon />
           Continue with Google
         </button>

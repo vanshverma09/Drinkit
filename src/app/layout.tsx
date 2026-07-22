@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Manrope } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,8 +44,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors position="top-center" />
+          <NextAuthProvider>
+            {children}
+            <Toaster richColors position="top-center" />
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>

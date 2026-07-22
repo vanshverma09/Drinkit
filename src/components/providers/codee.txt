@@ -1,0 +1,2 @@
+For Viewing Orders 
+       npx prisma studio

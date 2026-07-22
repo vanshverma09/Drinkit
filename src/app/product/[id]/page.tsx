@@ -9,9 +9,10 @@ import {
   Rotate3D, Maximize2, X
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { products } from "@/data/dummy";
 import { Price } from "@/components/ui/Typography";
 import { ProductRow } from "@/components/home/ProductRow";
+import { getProductById } from "./actions";
+import { useCartStore } from "@/store/cart";
 
 // Dummy extra data for the product page
 const productDetails = {
@@ -43,21 +44,29 @@ export default function ProductPage() {
   const router = useRouter();
   const params = useParams();
   
-  const [product, setProduct] = useState(products[0]); // Fallback to first product
+  const [product, setProduct] = useState<any>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [quantity, setQuantity] = useState(0);
   const [expandedSection, setExpandedSection] = useState<string | null>("description");
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [is3DOpen, setIs3DOpen] = useState(false);
 
+  // Zustand Cart Hooks
+  const { items, addToCart, updateQuantity, removeFromCart } = useCartStore();
+  const cartItem = items.find(item => item.id === product?.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+
   useEffect(() => {
-    // In a real app, fetch based on params.id
     if (params.id) {
-      const found = products.find(p => p.id === params.id);
-      if (found) setProduct(found);
+      getProductById(params.id as string).then(found => {
+        if (found) setProduct(found);
+      });
     }
   }, [params.id]);
+
+  if (!product) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   const toggleSection = (section: string) => {
     setExpandedSection(prev => prev === section ? null : section);
@@ -110,7 +119,7 @@ export default function ProductPage() {
             className="absolute inset-0"
           >
             <Image
-              src={productDetails.images[activeImage]}
+              src={product.image || productDetails.images[activeImage]}
               alt={product.name}
               fill
               className="object-cover"
@@ -273,11 +282,7 @@ export default function ProductPage() {
 
         {/* ── RELATED PRODUCTS ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="-mx-4">
-          <ProductRow title="Frequently Bought Together" items={products.slice(0, 4)} />
-        </motion.div>
-        
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="-mx-4">
-          <ProductRow title="Similar Products" items={products.slice(4, 8)} />
+          {/* Note: In a real app we'd fetch actual related products from DB here */}
         </motion.div>
 
         {/* ── REVIEWS ── */}
@@ -315,7 +320,7 @@ export default function ProductPage() {
       >
         {quantity === 0 ? (
           <button 
-            onClick={() => setQuantity(1)}
+            onClick={() => addToCart(product)}
             className="w-full h-12 bg-primary text-white rounded-[--radius-lg] font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-primary"
           >
             Add to Cart
@@ -325,14 +330,14 @@ export default function ProductPage() {
         ) : (
           <div className="flex items-center justify-between w-full h-12 bg-primary rounded-[--radius-lg] text-white px-4 shadow-primary">
             <button 
-              onClick={() => setQuantity(q => Math.max(0, q - 1))}
+              onClick={() => updateQuantity(product.id, quantity - 1)}
               className="p-1 hover:bg-white/20 rounded-md transition-colors"
             >
               <Minus size={20} />
             </button>
             <span className="font-bold">{quantity}</span>
             <button 
-              onClick={() => setQuantity(q => q + 1)}
+              onClick={() => updateQuantity(product.id, quantity + 1)}
               className="p-1 hover:bg-white/20 rounded-md transition-colors"
             >
               <Plus size={20} />

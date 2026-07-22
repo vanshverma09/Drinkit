@@ -23,7 +23,7 @@ export default function EmailLoginPage() {
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -32,7 +32,22 @@ export default function EmailLoginPage() {
     }
     setErrors({});
     setIsLoading(true);
-    setTimeout(() => router.push("/home"), 1200);
+    
+    // Dynamically import signIn
+    const { signIn } = await import("next-auth/react");
+    
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      setErrors({ password: "Invalid email or password" });
+      setIsLoading(false);
+    } else {
+      router.push("/home");
+    }
   };
 
   const stagger = {

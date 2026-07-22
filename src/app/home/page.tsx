@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AppShell from "@/components/AppShell";
 import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { CategoriesSlider } from "@/components/home/CategoriesSlider";
@@ -9,25 +7,32 @@ import { BrandsSection } from "@/components/home/BrandsSection";
 import { FeaturedStores } from "@/components/home/FeaturedStores";
 import { FloatingCartButton } from "@/components/home/FloatingCartButton";
 import { MembershipBanner } from "@/components/home/MembershipBanner";
-import { getTrendingProducts, getFlashSaleProducts, getRecommendedProducts, getProductsByCategory, getPremiumBrandsProducts } from "@/data/dummy";
 import Link from "next/link";
+import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function HomePage() {
-  const [isClient, setIsClient] = useState(false);
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+  
+  // Fetch all products from our live Postgres database
+  const products = await prisma.product.findMany();
+  
+  // Categorize them on the server just like dummy data used to
+  const premiumProducts = products.filter(p => p.category === "Premium");
+  const trendingProducts = products.filter(p => p.category === "Whiskey" || p.category === "Vodka").slice(0, 10);
+  const flashSaleProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 5); // Just a mock flash sale
+  const coldDrinks = products.filter(p => p.category === "Beer" || p.category === "Vodka").slice(0, 6);
+  const recommended = products.slice(0, 8);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null; // Avoid hydration mismatch for motion components
+  const userName = session?.user?.name ? session.user.name.split(" ")[0] : "Guest";
 
   return (
     <AppShell>
       <div className="pb-16 lg:pb-0">
-        {/* Dynamic greeting based on time could go here, but Header handles address/search */}
         <div className="pt-2 px-4 pb-1">
           <h1 className="text-2xl font-heading font-bold text-text-primary">
-            Good Morning, Vansh
+            Good Morning, {userName}
           </h1>
           <p className="text-sm text-text-secondary">What would you like to drink today?</p>
         </div>
@@ -49,12 +54,11 @@ export default function HomePage() {
         </div>
 
         <PromoCarousel />
-        
         <CategoriesSlider />
         
         <ProductRow 
           title="Flash Sale" 
-          items={getFlashSaleProducts()} 
+          items={flashSaleProducts as any} 
           showTimer={true} 
         />
         
@@ -62,29 +66,23 @@ export default function HomePage() {
         
         <ProductRow 
           title="Trending Drinks" 
-          items={getTrendingProducts()} 
+          items={trendingProducts as any} 
         />
 
         <MembershipBanner />
         
         <ProductRow 
           title="Cold Drinks" 
-          items={getProductsByCategory("Cold Drinks")} 
-        />
-        
-        <ProductRow 
-          title="Fresh Juices" 
-          items={getProductsByCategory("Juices")} 
+          items={coldDrinks as any} 
         />
         
         <FeaturedStores />
         
         <ProductRow 
           title="Recommended For You" 
-          items={getRecommendedProducts()} 
+          items={recommended as any} 
         />
         
-        {/* End of content spacing */}
         <div className="h-20" />
       </div>
 
