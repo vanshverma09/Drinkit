@@ -68,11 +68,6 @@ export function ProductRow({ title, items, showTimer }: ProductRowProps) {
                 className="object-cover"
                 sizes="(max-width: 768px) 150px, 200px"
               />
-              <div className="absolute top-1.5 right-1.5 bg-white dark:bg-surface rounded-sm p-0.5 shadow-sm">
-                <div className={`w-3 h-3 border ${product.isVeg ? 'border-success' : 'border-error'} flex items-center justify-center p-[1px]`}>
-                  <div className={`w-full h-full rounded-full ${product.isVeg ? 'bg-success' : 'bg-error'}`} />
-                </div>
-              </div>
             </div>
 
             {/* Details */}

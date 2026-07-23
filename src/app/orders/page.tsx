@@ -172,7 +172,7 @@ export default function OrdersPage() {
                       </span>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
-                      {order.items.map(item => `${item.qty}x ${item.name}`).join(", ")}
+                      {order.items.map((item: any) => `${item.qty}x ${item.name}`).join(", ")}
                     </p>
                   </div>
                 </div>

@@ -12,10 +12,12 @@ import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { products } from "@/data/dummy";
 import { useCartStore } from "@/store/cart";
+import { useAddressStore } from "@/store/address";
 
 export default function CartPage() {
   const router = useRouter();
   const { items: cartItems, updateQuantity, removeFromCart: removeItem } = useCartStore();
+  const { selectedAddress } = useAddressStore();
   const [isClient, setIsClient] = useState(false);
   const [coupon, setCoupon] = useState<string | null>(null);
   const [couponInput, setCouponInput] = useState("");
@@ -99,7 +101,7 @@ export default function CartPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-text-primary">Delivery in 15 mins</h3>
-                  <p className="text-xs text-text-secondary line-clamp-1">Home - 45B, Sector 3, Cyber City</p>
+                  <p className="text-xs text-text-secondary line-clamp-1">{selectedAddress.type} - {selectedAddress.text}</p>
                 </div>
               </div>
               <ChevronRight size={18} className="text-text-tertiary" />

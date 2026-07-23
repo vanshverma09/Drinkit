@@ -3,20 +3,24 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ArrowLeft, MapPin, Clock, CreditCard, ChevronRight, 
+  ArrowLeft, MapPin, Clock, CreditCard, ChevronRight, ChevronLeft,
   Gift, CheckCircle2, ShieldCheck, Wallet, Smartphone, Banknote
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useCartStore } from "@/store/cart";
+import { useAddressStore } from "@/store/address";
 import { placeOrder } from "./actions";
 import { toast } from "sonner";
+import { Modal } from "@/components/ui/Modal";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   
   const { items, totalPrice, clearCart } = useCartStore();
+  const { selectedAddress } = useAddressStore();
   
   const itemTotal = totalPrice();
   const handlingFee = 15;
@@ -30,20 +34,38 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "cod">("upi");
   const [isGift, setIsGift] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
+  
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const [donationAmount, setDonationAmount] = useState(0);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+
+  const donationMedia = [
+    { type: "image", src: "/donation/beekh.jpg", alt: "Support children" },
+    { type: "video", src: "/donation/video.mp4", alt: "Donation Video" },
+    { type: "image", src: "/donation/fun.jpg", alt: "Fun activities" },
+  ];
+
+  const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % donationMedia.length);
+  const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + donationMedia.length) % donationMedia.length);
 
   useEffect(() => setIsClient(true), []);
 
-  const handlePlaceOrder = async () => {
+  const initiateOrder = () => {
     if (items.length === 0) {
       toast.error("Your cart is empty!");
       return;
     }
+    setIsDonationModalOpen(true);
+  };
 
+  const executeOrder = async (donation: number) => {
+    setIsDonationModalOpen(false);
+    setDonationAmount(donation);
     setStep("processing");
     
     // Map items to the format required by our Server Action
     const orderPayload = items.map(i => ({ id: i.id, quantity: i.quantity }));
-    const address = "45B, Sector 3, Cyber City, Phase 2, Floor 4"; // In a real app, this comes from an address selector
+    const address = selectedAddress.text;
 
     try {
       const response = await placeOrder(orderPayload, address);
@@ -100,8 +122,8 @@ export default function CheckoutPage() {
                   <button className="text-primary text-sm font-semibold">Change</button>
                 </div>
                 <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-[--radius-md]">
-                  <h3 className="font-bold text-sm text-text-primary">Home</h3>
-                  <p className="text-sm text-text-secondary mt-1">45B, Sector 3, Cyber City, Phase 2, Floor 4</p>
+                  <h3 className="font-bold text-sm text-text-primary">{selectedAddress.type}</h3>
+                  <p className="text-sm text-text-secondary mt-1">{selectedAddress.text}</p>
                   <p className="text-sm text-text-secondary mt-0.5">+91 98765 43210</p>
                 </div>
               </section>
@@ -267,7 +289,7 @@ export default function CheckoutPage() {
             {/* Sticky Action Bar */}
             <div className="fixed bottom-0 left-0 right-0 z-[100] bg-surface border-t border-border-light p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] pb-safe">
               <button 
-                onClick={handlePlaceOrder}
+                onClick={initiateOrder}
                 className="w-full h-12 bg-primary text-white rounded-[--radius-lg] font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-primary"
               >
                 Place Order • ₹{grandTotal}
@@ -347,6 +369,82 @@ export default function CheckoutPage() {
         )}
 
       </AnimatePresence>
+
+      <Modal
+        isOpen={isDonationModalOpen}
+        onClose={() => executeOrder(0)}
+        closeOnOverlay={false}
+        title="Support a Cause 💖"
+        description="Would you like to donate a small amount to support underprivileged children before placing your order?"
+      >
+        <div className="flex flex-col gap-4 mt-2">
+          
+          {/* Carousel */}
+          <div className="relative w-full h-[240px] sm:h-[380px] rounded-xl overflow-hidden group bg-gray-100 dark:bg-gray-800 shadow-inner">
+            {donationMedia[currentMediaIndex].type === "image" ? (
+              <Image 
+                src={donationMedia[currentMediaIndex].src}
+                alt={donationMedia[currentMediaIndex].alt}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <video 
+                src={donationMedia[currentMediaIndex].src} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            )}
+
+            {/* Navigation Buttons */}
+            <button 
+              onClick={prevMedia}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button 
+              onClick={nextMedia}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronRight size={18} />
+            </button>
+
+            {/* Indicators */}
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10">
+              {donationMedia.map((_, idx) => (
+                <div 
+                  key={idx} 
+                  className={`h-1.5 rounded-full transition-all ${idx === currentMediaIndex ? 'w-4 bg-primary' : 'w-1.5 bg-white/50'}`} 
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {[10, 20, 50].map((amount) => (
+              <button
+                key={amount}
+                onClick={() => executeOrder(amount)}
+                className="py-3 px-2 border-2 border-primary/20 rounded-xl hover:border-primary hover:bg-primary/5 transition-all text-primary font-bold"
+              >
+                ₹{amount}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={() => executeOrder(0)}
+            className="w-full py-1 text-sm text-text-secondary font-medium hover:text-text-primary transition-colors mt-[-4px]"
+          >
+            No thanks, just place my order
+          </button>
+        </div>
+      </Modal>
+
     </div>
   );
 }

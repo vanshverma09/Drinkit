@@ -143,13 +143,6 @@ export default function ProductPage() {
             <Rotate3D size={18} />
           </button>
         </div>
-
-        {/* Veg/NonVeg Badge */}
-        <div className="absolute bottom-4 left-4 bg-white/80 dark:bg-black/50 backdrop-blur-sm rounded-sm p-1 shadow-sm">
-          <div className={`w-4 h-4 border ${product.isVeg ? 'border-success' : 'border-error'} flex items-center justify-center p-[2px]`}>
-            <div className={`w-full h-full rounded-full ${product.isVeg ? 'bg-success' : 'bg-error'}`} />
-          </div>
-        </div>
       </div>
 
       {/* Image Thumbnails */}

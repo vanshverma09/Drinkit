@@ -9,6 +9,13 @@ import {
   Package, Truck, MoreHorizontal, ShieldCheck, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getLatestOrder } from "./actions";
+import dynamic from "next/dynamic";
+
+const TrackingMap = dynamic(() => import("@/components/tracking/Map"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse flex items-center justify-center text-gray-400">Loading Map...</div>
+});
 
 // Dummy tracking states
 const trackingSteps = [
@@ -21,10 +28,14 @@ const trackingSteps = [
 export default function TrackingPage() {
   const router = useRouter();
   
-  // Animate map marker
   const [pulse, setPulse] = useState(false);
+  const [order, setOrder] = useState<any>(null);
 
   useEffect(() => {
+    getLatestOrder().then((data) => {
+      if (data) setOrder(data);
+    });
+
     const interval = setInterval(() => {
       setPulse(p => !p);
     }, 1000);
@@ -48,7 +59,7 @@ export default function TrackingPage() {
                 Track Order
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                #ORD-8392104 • 3 items
+                {order ? `#${order.id.slice(0, 11).toUpperCase()} • ${order.orderItems.length} items` : "Loading..."}
               </p>
             </div>
           </div>
@@ -59,60 +70,8 @@ export default function TrackingPage() {
       </header>
 
       {/* ── Live Map Placeholder ── */}
-      <div className="relative w-full h-[35vh] sm:h-[40vh] bg-gray-200 dark:bg-gray-800 overflow-hidden">
-        {/* Fake Map Texture */}
-        <div 
-          className="absolute inset-0 opacity-40 dark:opacity-20"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        
-        {/* Animated Path (SVG) */}
-        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-          <motion.path
-            d="M 20 80 Q 50 20 80 40"
-            fill="transparent"
-            stroke="var(--color-primary)"
-            strokeWidth="2"
-            strokeDasharray="4 4"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 2, ease: "easeInOut" }}
-          />
-        </svg>
-
-        {/* Destination Marker */}
-        <div className="absolute top-[40%] left-[80%] -translate-x-1/2 -translate-y-1/2">
-          <div className="relative">
-            <MapPin className="w-8 h-8 text-red-500 fill-white" />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-black/20 rounded-full blur-[2px]" />
-          </div>
-        </div>
-
-        {/* Delivery Partner Marker (Animated) */}
-        <motion.div 
-          className="absolute top-[80%] left-[20%] -translate-x-1/2 -translate-y-1/2"
-          animate={{
-            top: ["80%", "60%", "45%"],
-            left: ["20%", "45%", "65%"]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        >
-          <div className="relative">
-            {/* Pulse Effect */}
-            <motion.div 
-              className="absolute inset-0 bg-primary/40 rounded-full -m-2"
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <div className="bg-white p-1.5 rounded-full shadow-lg border-2 border-primary relative z-10">
-              <Truck className="w-5 h-5 text-primary" />
-            </div>
-          </div>
-        </motion.div>
+      <div className="relative w-full h-[35vh] sm:h-[40vh] bg-gray-200 dark:bg-gray-800 overflow-hidden z-0">
+        <TrackingMap />
       </div>
 
       {/* ── Order Status Overlay ── */}
@@ -255,7 +214,7 @@ export default function TrackingPage() {
           <div>
             <h3 className="font-medium text-gray-900 dark:text-white">Delivery Address</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Home • 123, Tech Park, Sector 45, Gurgaon, Haryana 122003
+              {order ? order.address : "Loading..."}
             </p>
           </div>
         </motion.div>

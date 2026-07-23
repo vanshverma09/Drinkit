@@ -6,17 +6,17 @@ import { Search, LayoutGrid, List as ListIcon, ChevronDown } from "lucide-react"
 import AppShell from "@/components/AppShell";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductCardSkeleton } from "@/components/ui/Skeleton";
-import { categories, products } from "@/data/dummy";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { searchProducts } from "../search/actions";
 
 /* Mock subcategories based on active main category */
 const getSubcategories = (mainCategory: string) => {
-  if (mainCategory === "Cold Drinks") return ["Colas", "Clear Sodas", "Diet & Zero", "Mixers"];
-  if (mainCategory === "Juices") return ["100% Fruit", "Mixed Fruit", "Lemonades", "Smoothies"];
-  if (mainCategory === "Tea") return ["Green Tea", "Iced Tea", "Black Tea", "Herbal"];
-  if (mainCategory === "Coffee") return ["Cold Coffee", "Instant", "Beans", "Filter"];
+  if (mainCategory === "Whiskey") return ["Single Malt", "Blended", "Bourbon", "Irish"];
+  if (mainCategory === "Vodka") return ["Classic", "Flavored", "Premium"];
+  if (mainCategory === "Beer") return ["Lager", "Ale", "Stout", "Wheat"];
+  if (mainCategory === "Rum") return ["Dark", "White", "Spiced"];
   return ["All Options", "Best Sellers", "New Arrivals", "Premium"];
 };
 
@@ -30,59 +30,35 @@ export default function CategoriesPage() {
 
 function CategoriesContent() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") || categories[0].name;
   
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState("Whiskey");
   const [activeSubTab, setActiveSubTab] = useState("All Options");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [displayedProducts, setDisplayedProducts] = useState(products);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [displayedProducts, setDisplayedProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Infinite scroll simulation ref
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const categories = ["Whiskey", "Vodka", "Beer", "Rum", "Premium"];
 
-  // Filter products when tabs change
   useEffect(() => {
+    searchProducts("", "").then(data => {
+      setAllProducts(data);
+      const initialTab = searchParams.get("tab") || "Whiskey";
+      setActiveTab(initialTab);
+    });
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (allProducts.length === 0) return;
     setIsLoading(true);
-    
-    // Simulate network delay for category switch
     const timer = setTimeout(() => {
-      let filtered = products.filter(p => p.category === activeTab || activeTab === "All");
-      // Add more items to make infinite scroll visible (duplicating dummy data for demo)
-      setDisplayedProducts([...filtered, ...filtered.map(p => ({...p, id: p.id + '_dup'}))]);
+      let filtered = allProducts.filter(p => p.category.includes(activeTab) || activeTab === "All");
+      setDisplayedProducts(filtered);
       setIsLoading(false);
-      setActiveSubTab(getSubcategories(activeTab)[0]); // Reset sub tab
-    }, 400);
-    
+      setActiveSubTab(getSubcategories(activeTab)[0]);
+    }, 300);
     return () => clearTimeout(timer);
-  }, [activeTab]);
-
-  // Infinite scroll intersection observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoading && displayedProducts.length > 0) {
-          setIsFetchingMore(true);
-          // Simulate fetching more data
-          setTimeout(() => {
-            setDisplayedProducts(prev => [
-              ...prev, 
-              ...products.map(p => ({...p, id: p.id + '_more_' + Math.random()}))
-            ]);
-            setIsFetchingMore(false);
-          }, 800);
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (bottomRef.current) {
-      observer.observe(bottomRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [isLoading, displayedProducts.length]);
+  }, [activeTab, allProducts]);
 
   return (
     <AppShell>
@@ -119,14 +95,14 @@ function CategoriesContent() {
           <div className="px-4 pb-0 flex overflow-x-auto hide-scrollbar gap-6 relative">
             {categories.map((cat) => (
               <button
-                key={cat.id}
-                onClick={() => setActiveTab(cat.name)}
+                key={cat}
+                onClick={() => setActiveTab(cat)}
                 className={`pb-3 whitespace-nowrap text-sm font-semibold transition-colors relative ${
-                  activeTab === cat.name ? "text-primary" : "text-text-secondary hover:text-text-primary"
+                  activeTab === cat ? "text-primary" : "text-text-secondary hover:text-text-primary"
                 }`}
               >
-                {cat.name}
-                {activeTab === cat.name && (
+                {cat}
+                {activeTab === cat && (
                   <motion.div 
                     layoutId="activeTabIndicator"
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" 
@@ -180,16 +156,6 @@ function CategoriesContent() {
             </motion.div>
           )}
 
-          {/* Infinite Scroll Loader */}
-          <div ref={bottomRef} className="py-6 flex justify-center">
-            {isFetchingMore && (
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="h-2 w-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="h-2 w-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            )}
-          </div>
         </div>
 
       </div>
