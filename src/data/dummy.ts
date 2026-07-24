@@ -282,6 +282,84 @@ export const products = [
     image: "/softdrinks/sprite.png",
     isVeg: true,
     category: "Soft Drinks"
+  },
+  {
+    id: "p22",
+    name: "Pepsi Cola",
+    brand: "Pepsi",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/pepsi.png",
+    isVeg: true,
+    category: "Soft Drinks"
+  },
+  {
+    id: "p23",
+    name: "Fanta Orange",
+    brand: "Fanta",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/fanta.png",
+    isVeg: true,
+    category: "Soft Drinks"
+  },
+  {
+    id: "p24",
+    name: "Thums Up",
+    brand: "Thums Up",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/thums_up.png",
+    isVeg: true,
+    category: "Soft Drinks"
+  },
+  {
+    id: "p25",
+    name: "Mountain Dew",
+    brand: "Mountain Dew",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/mountain_dew.png",
+    isVeg: true,
+    category: "Soft Drinks"
+  },
+  {
+    id: "p26",
+    name: "Red Bull Energy Drink",
+    brand: "Red Bull",
+    price: 125,
+    mrp: 130,
+    volume: "250 ml",
+    image: "/softdrinks/red_bull.png",
+    isVeg: true,
+    tag: "Trending",
+    category: "Soft Drinks"
+  },
+  {
+    id: "p27",
+    name: "Limca",
+    brand: "Limca",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/limca.png",
+    isVeg: true,
+    category: "Soft Drinks"
+  },
+  {
+    id: "p28",
+    name: "Maaza Mango",
+    brand: "Maaza",
+    price: 45,
+    mrp: 50,
+    volume: "600 ml",
+    image: "/softdrinks/maaza.png",
+    isVeg: true,
+    category: "Soft Drinks"
   }
 ];
 
@@ -305,6 +383,13 @@ export const brands = [
   { id: "br17", name: "Old Monk", logo: "🍹" },
   { id: "br18", name: "Coca Cola", logo: "🥤" },
   { id: "br19", name: "Sprite", logo: "🥤" },
+  { id: "br20", name: "Pepsi", logo: "🥤" },
+  { id: "br21", name: "Fanta", logo: "🥤" },
+  { id: "br22", name: "Thums Up", logo: "🥤" },
+  { id: "br23", name: "Mountain Dew", logo: "🥤" },
+  { id: "br24", name: "Red Bull", logo: "⚡" },
+  { id: "br25", name: "Limca", logo: "🥤" },
+  { id: "br26", name: "Maaza", logo: "🥭" },
 ];
 
 export const stores = [
