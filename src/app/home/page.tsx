@@ -13,7 +13,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
+  const session: any = null;
   
   // Fetch all products from our live Postgres database
   const products = await prisma.product.findMany();
@@ -23,6 +24,11 @@ export default async function HomePage() {
   const trendingProducts = products.filter(p => p.category === "Whiskey" || p.category === "Vodka").slice(0, 10);
   const flashSaleProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 5); // Just a mock flash sale
   const softDrinks = products.filter(p => p.category === "Soft Drinks");
+  const barware = products.filter(p => p.category === "Barware");
+  const glassware = products.filter(p => p.category === "Glassware");
+  const kits = products.filter(p => p.category === "Kits");
+  const snacks = products.filter(p => p.category === "Snacks");
+  const recovery = products.filter(p => p.category === "Recovery");
   const coldDrinks = products.filter(p => p.category === "Beer" || p.category === "Vodka").slice(0, 6);
   const recommended = products.slice(0, 8);
 
@@ -44,6 +50,36 @@ export default async function HomePage() {
               title="Refreshing Soft Drinks" 
               items={softDrinks as any} 
             />
+          </div>
+        )}
+
+        {barware.length > 0 && (
+          <div className="pt-4">
+            <ProductRow title="Barware & Accessories" items={barware as any} />
+          </div>
+        )}
+
+        {glassware.length > 0 && (
+          <div className="pt-4">
+            <ProductRow title="Premium Glassware" items={glassware as any} />
+          </div>
+        )}
+
+        {kits.length > 0 && (
+          <div className="pt-4">
+            <ProductRow title="Cocktail Kits" items={kits as any} />
+          </div>
+        )}
+
+        {snacks.length > 0 && (
+          <div className="pt-4">
+            <ProductRow title="Bar Snacks" items={snacks as any} />
+          </div>
+        )}
+
+        {recovery.length > 0 && (
+          <div className="pt-4">
+            <ProductRow title="Hangover Recovery" items={recovery as any} />
           </div>
         )}
 

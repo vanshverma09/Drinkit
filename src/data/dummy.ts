@@ -43,6 +43,11 @@ export const categories = [
   { id: "c11", name: "Mixers", icon: "🧊", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
   { id: "c12", name: "Sparkling Wine", icon: "🥂", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400" },
   { id: "c13", name: "RTD Cocktails", icon: "🍹", color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400" },
+  { id: "c14", name: "Barware", icon: "🍸", color: "bg-zinc-100 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400" },
+  { id: "c15", name: "Glassware", icon: "🥂", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
+  { id: "c16", name: "Kits", icon: "🎁", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
+  { id: "c17", name: "Snacks", icon: "🥜", color: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
+  { id: "c18", name: "Recovery", icon: "💊", color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
 ];
 
 export const products = [
@@ -409,6 +414,62 @@ export const products = [
     image: "/rtd/breezer.png",
     isVeg: true,
     category: "RTD Cocktails"
+  },
+  {
+    id: "p33",
+    name: "Professional Cocktail Shaker Set",
+    brand: "MixologyPro",
+    price: 1500,
+    mrp: 1999,
+    volume: "1 Set",
+    image: "/accessories/shaker.png",
+    isVeg: true,
+    category: "Barware"
+  },
+  {
+    id: "p34",
+    name: "Premium Crystal Whiskey Glass Set (2x)",
+    brand: "Crystaline",
+    price: 2200,
+    mrp: 2500,
+    volume: "1 Set",
+    image: "/accessories/whiskey_glass.png",
+    isVeg: true,
+    category: "Glassware"
+  },
+  {
+    id: "p35",
+    name: "Margarita DIY Cocktail Kit",
+    brand: "DrinkIT Kits",
+    price: 3500,
+    mrp: 4000,
+    volume: "1 Kit",
+    image: "/accessories/margarita_kit.png",
+    isVeg: true,
+    tag: "Trending",
+    category: "Kits"
+  },
+  {
+    id: "p36",
+    name: "Hydration Multiplier Pack",
+    brand: "Liquid I.V.",
+    price: 900,
+    mrp: 1000,
+    volume: "10 Packets",
+    image: "/accessories/recovery.png",
+    isVeg: true,
+    category: "Recovery"
+  },
+  {
+    id: "p37",
+    name: "Gourmet Mixed Nuts",
+    brand: "Nutty Bites",
+    price: 450,
+    mrp: 500,
+    volume: "200g",
+    image: "/accessories/nuts.png",
+    isVeg: true,
+    category: "Snacks"
   }
 ];
 
@@ -443,6 +504,11 @@ export const brands = [
   { id: "br28", name: "Schweppes", logo: "🧊" },
   { id: "br29", name: "Moët & Chandon", logo: "🥂" },
   { id: "br30", name: "Bacardi", logo: "🦇" },
+  { id: "br31", name: "MixologyPro", logo: "🍸" },
+  { id: "br32", name: "Crystaline", logo: "🥂" },
+  { id: "br33", name: "DrinkIT Kits", logo: "🎁" },
+  { id: "br34", name: "Liquid I.V.", logo: "💧" },
+  { id: "br35", name: "Nutty Bites", logo: "🥜" },
 ];
 
 export const stores = [

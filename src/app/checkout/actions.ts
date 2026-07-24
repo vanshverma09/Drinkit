@@ -7,7 +7,8 @@ import { authOptions } from "@/lib/auth";
 export async function placeOrder(items: { id: string, quantity: number }[], address: string) {
   try {
     // 1. Verify User is Logged In (BYPASSED TEMPORARILY)
-    const session = await getServerSession(authOptions);
+    // const session = await getServerSession(authOptions);
+    const session: any = null;
     /*
     if (!session?.user?.email) {
       return { success: false, error: "You must be logged in to place an order." };

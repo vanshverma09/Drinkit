@@ -5,7 +5,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 export async function getUserOrders() {
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
+  const session: any = null;
   
   /*
   if (!session?.user?.email) {

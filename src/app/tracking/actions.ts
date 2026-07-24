@@ -5,7 +5,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 export async function getLatestOrder() {
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
+  const session: any = null;
   
   let user = null;
   if (session?.user?.email) {

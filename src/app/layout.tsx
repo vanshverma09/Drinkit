@@ -44,10 +44,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextAuthProvider>
+          {/* <NextAuthProvider> */}
             {children}
             <Toaster richColors position="top-center" />
-          </NextAuthProvider>
+          {/* </NextAuthProvider> */}
         </ThemeProvider>
       </body>
     </html>
