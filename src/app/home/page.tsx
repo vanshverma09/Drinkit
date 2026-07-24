@@ -22,6 +22,7 @@ export default async function HomePage() {
   const premiumProducts = products.filter(p => p.category === "Premium");
   const trendingProducts = products.filter(p => p.category === "Whiskey" || p.category === "Vodka").slice(0, 10);
   const flashSaleProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 5); // Just a mock flash sale
+  const softDrinks = products.filter(p => p.category === "Soft Drinks");
   const coldDrinks = products.filter(p => p.category === "Beer" || p.category === "Vodka").slice(0, 6);
   const recommended = products.slice(0, 8);
 
@@ -56,10 +57,17 @@ export default async function HomePage() {
         <PromoCarousel />
         <CategoriesSlider />
         
+        {softDrinks.length > 0 && (
+          <ProductRow 
+            title="Refreshing Soft Drinks" 
+            items={softDrinks as any} 
+          />
+        )}
+        
         <ProductRow 
-          title="Flash Sale" 
-          items={flashSaleProducts as any} 
-          showTimer={true} 
+            title="Flash Sale" 
+            items={flashSaleProducts as any} 
+            showTimer={true} 
         />
         
         <BrandsSection />

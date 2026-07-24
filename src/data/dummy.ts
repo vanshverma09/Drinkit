@@ -38,6 +38,7 @@ export const categories = [
   { id: "c6", name: "Beer", icon: "🍺", color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" },
   { id: "c7", name: "Wine", icon: "🍷", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400" },
   { id: "c8", name: "Liqueurs", icon: "🍾", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
+  { id: "c9", name: "Soft Drinks", icon: "🥤", color: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400" },
 ];
 
 export const products = [
@@ -258,6 +259,29 @@ export const products = [
     image: "/rum/old monk.jpg",
     isVeg: true,
     category: "Rum"
+  },
+  {
+    id: "p20",
+    name: "Coca Cola Classic",
+    brand: "Coca Cola",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/cola.png",
+    isVeg: true,
+    tag: "Trending",
+    category: "Soft Drinks"
+  },
+  {
+    id: "p21",
+    name: "Sprite Lemon Lime",
+    brand: "Sprite",
+    price: 40,
+    mrp: 45,
+    volume: "330 ml",
+    image: "/softdrinks/sprite.png",
+    isVeg: true,
+    category: "Soft Drinks"
   }
 ];
 
@@ -279,6 +303,8 @@ export const brands = [
   { id: "br15", name: "Contessa", logo: "🍹" },
   { id: "br16", name: "Hercules", logo: "🍹" },
   { id: "br17", name: "Old Monk", logo: "🍹" },
+  { id: "br18", name: "Coca Cola", logo: "🥤" },
+  { id: "br19", name: "Sprite", logo: "🥤" },
 ];
 
 export const stores = [

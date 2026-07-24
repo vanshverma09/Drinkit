@@ -11,13 +11,23 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log('Seeding database with DrinkIT products...');
 
-  // Clear existing products to prevent duplicates on re-seed
-  await prisma.product.deleteMany({});
-  console.log('Cleared existing products.');
+  // await prisma.product.deleteMany({});
+  // console.log('Cleared existing products.');
 
   for (const p of products) {
-    await prisma.product.create({
-      data: {
+    await prisma.product.upsert({
+      where: { id: p.id },
+      update: {
+        name: p.name,
+        brand: p.brand,
+        category: p.category,
+        volume: p.volume,
+        price: p.price,
+        mrp: p.mrp,
+        discount: p.discount || null,
+        image: p.image,
+      },
+      create: {
         id: p.id,
         name: p.name,
         brand: p.brand,
@@ -30,7 +40,7 @@ async function main() {
         stock: 100, // default stock
       }
     });
-    console.log(`Added ${p.name}`);
+    console.log(`Upserted ${p.name}`);
   }
 
   console.log('Seeding complete! 🚀');
