@@ -37,6 +37,15 @@ export default async function HomePage() {
           </h1>
           <p className="text-sm text-text-secondary">What would you like to drink today?</p>
         </div>
+        
+        {softDrinks.length > 0 && (
+          <div className="pt-2">
+            <ProductRow 
+              title="Refreshing Soft Drinks" 
+              items={softDrinks as any} 
+            />
+          </div>
+        )}
 
         {/* Premium Brands Banner */}
         <div className="px-4 mt-4 mb-2">
@@ -56,13 +65,6 @@ export default async function HomePage() {
 
         <PromoCarousel />
         <CategoriesSlider />
-        
-        {softDrinks.length > 0 && (
-          <ProductRow 
-            title="Refreshing Soft Drinks" 
-            items={softDrinks as any} 
-          />
-        )}
         
         <ProductRow 
             title="Flash Sale" 
