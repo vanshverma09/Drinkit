@@ -39,6 +39,10 @@ export const categories = [
   { id: "c7", name: "Wine", icon: "🍷", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400" },
   { id: "c8", name: "Liqueurs", icon: "🍾", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
   { id: "c9", name: "Soft Drinks", icon: "🥤", color: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400" },
+  { id: "c10", name: "Energy Drinks", icon: "⚡", color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400" },
+  { id: "c11", name: "Mixers", icon: "🧊", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
+  { id: "c12", name: "Sparkling Wine", icon: "🥂", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400" },
+  { id: "c13", name: "RTD Cocktails", icon: "🍹", color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400" },
 ];
 
 export const products = [
@@ -360,6 +364,51 @@ export const products = [
     image: "/softdrinks/maaza.png",
     isVeg: true,
     category: "Soft Drinks"
+  },
+  {
+    id: "p29",
+    name: "Monster Energy Drink",
+    brand: "Monster",
+    price: 110,
+    mrp: 125,
+    volume: "500 ml",
+    image: "/mixers/monster.png",
+    isVeg: true,
+    category: "Energy Drinks"
+  },
+  {
+    id: "p30",
+    name: "Schweppes Tonic Water",
+    brand: "Schweppes",
+    price: 60,
+    mrp: 65,
+    volume: "300 ml",
+    image: "/mixers/tonic.png",
+    isVeg: true,
+    category: "Mixers"
+  },
+  {
+    id: "p31",
+    name: "Moët & Chandon Impérial",
+    brand: "Moët & Chandon",
+    price: 8500,
+    mrp: 9000,
+    volume: "750 ml",
+    image: "/wine/moet.png",
+    isVeg: true,
+    tag: "Premium",
+    category: "Sparkling Wine"
+  },
+  {
+    id: "p32",
+    name: "Bacardi Breezer Cranberry",
+    brand: "Bacardi",
+    price: 150,
+    mrp: 160,
+    volume: "275 ml",
+    image: "/rtd/breezer.png",
+    isVeg: true,
+    category: "RTD Cocktails"
   }
 ];
 
@@ -390,6 +439,10 @@ export const brands = [
   { id: "br24", name: "Red Bull", logo: "⚡" },
   { id: "br25", name: "Limca", logo: "🥤" },
   { id: "br26", name: "Maaza", logo: "🥭" },
+  { id: "br27", name: "Monster", logo: "⚡" },
+  { id: "br28", name: "Schweppes", logo: "🧊" },
+  { id: "br29", name: "Moët & Chandon", logo: "🥂" },
+  { id: "br30", name: "Bacardi", logo: "🦇" },
 ];
 
 export const stores = [
