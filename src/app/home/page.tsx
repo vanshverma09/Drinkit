@@ -43,18 +43,18 @@ export default async function HomePage() {
           <p className="text-sm text-text-secondary">What would you like to drink today?</p>
         </div>
         
-        {softDrinks.length > 0 && (
+        {accessories.length > 0 && (
           <div className="pt-2">
+            <ProductRow title="Bar Accessories & Extras" items={accessories as any} />
+          </div>
+        )}
+
+        {softDrinks.length > 0 && (
+          <div className="pt-4">
             <ProductRow 
               title="Refreshing Soft Drinks" 
               items={softDrinks as any} 
             />
-          </div>
-        )}
-
-        {accessories.length > 0 && (
-          <div className="pt-4">
-            <ProductRow title="Bar Accessories & Extras" items={accessories as any} />
           </div>
         )}
 
