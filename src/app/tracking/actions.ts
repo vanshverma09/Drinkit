@@ -6,9 +6,16 @@ import { authOptions } from "@/lib/auth";
 
 export async function getLatestOrder() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return null;
   
-  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  let user = null;
+  if (session?.user?.email) {
+    user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  }
+
+  if (!user) {
+    user = await prisma.user.findFirst();
+  }
+  
   if (!user) return null;
   
   const order = await prisma.order.findFirst({

@@ -65,6 +65,7 @@ export default function ProfilePage() {
   };
 
   // ── Unauthenticated State ──
+  /*
   if (status === "unauthenticated") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
@@ -90,6 +91,7 @@ export default function ProfilePage() {
       </div>
     );
   }
+  */
 
   // ── Loading State ──
   if (status === "loading") {

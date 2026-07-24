@@ -1,2 +1,4 @@
 For Viewing Orders 
        npx prisma studio
+TO start the engine
+       npm run dev
